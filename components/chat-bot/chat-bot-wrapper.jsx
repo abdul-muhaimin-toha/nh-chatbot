@@ -16,7 +16,7 @@ import { useAskApi } from "@/hooks/use-ask";
 import { useScheduleApi } from "@/hooks/use-schedule";
 
 function ChatBotWrapper() {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [showEndChatConfirm, setShowEndChatConfirm] = useState(false);
   const [activeSuggestions, setActiveSuggestions] = useState(true);
   const [suggestions, setSuggestions] = useState(welcomeSuggestions);

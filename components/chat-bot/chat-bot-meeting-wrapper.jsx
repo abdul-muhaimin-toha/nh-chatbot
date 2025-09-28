@@ -36,7 +36,9 @@ export default function ChatBotMeetingWrapper({ handleScheduleSubmit }) {
 
   const onSubmit = (data) => {
     const formatted = {
-      date: data.date?.toISOString().split("T")[0],
+      date: data.date
+        ? `${data.date.getFullYear()}-${String(data.date.getMonth() + 1).padStart(2, "0")}-${String(data.date.getDate()).padStart(2, "0")}`
+        : null,
       time: data.time,
       topic: data.topic,
       guestEmails: data.guestEmails,
