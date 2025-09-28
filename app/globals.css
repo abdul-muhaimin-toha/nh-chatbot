@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@import "react-day-picker/style.css";
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -37,4 +39,51 @@ body {
 
 .chat-scroll::-webkit-scrollbar-track {
   background: transparent; /* or #f2f2f2 for light track */
+}
+
+.rdp-months {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Make each month full width */
+.rdp-month {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Make the grid of days full width */
+.rdp-month_grid {
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+/* Previous & next chevron default color */
+.rdp-button_previous .rdp-chevron,
+.rdp-button_next .rdp-chevron {
+  fill: #4d4d4d !important;
+  transition: fill 0.2s ease;
+}
+
+/* Chevron hover color */
+.rdp-button_previous:hover .rdp-chevron,
+.rdp-button_next:hover .rdp-chevron {
+  fill: #1158e5 !important; /* blue-500 */
+}
+
+/* Optional: hover scale effect for nav buttons */
+.rdp-button_previous,
+.rdp-button_next {
+  transition: transform 0.2s ease;
+}
+
+.rdp-button_previous:hover,
+.rdp-button_next:hover {
+  transform: scale(1.05);
+}
+
+.rdp-caption_label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #000000;
 }

@@ -3,6 +3,7 @@ import BotChat from "./bot-chat";
 import ChatBotLoading from "./chat-bot-loading";
 import ChatSuggestion from "./chat-suggestion";
 import ClientChat from "./client-chat";
+import ChatBotMeetingWrapper from "./chat-bot-meeting-wrapper";
 
 function ChatBotMainChatArea({
   chatMessages,
@@ -32,8 +33,8 @@ function ChatBotMainChatArea({
           <BotChat key={idx} text={msg.text} />
         ),
       )}
+      {/* <ChatBotMeetingWrapper /> */}
       {isPending && <ChatBotLoading />}
-      <div className=""></div>
       <div className="-mt-4 md:-mt-5" ref={chatEndRef} />
     </div>
   );

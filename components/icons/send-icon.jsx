@@ -1,8 +1,8 @@
-function SendIcon() {
+function SendIcon({ size = 48 }) {
   return (
     <svg
-      width={48}
-      height={48}
+      width={size}
+      height={size}
       className="h-10 w-10 md:h-12 md:w-12"
       viewBox="0 0 48 48"
       fill="none"
