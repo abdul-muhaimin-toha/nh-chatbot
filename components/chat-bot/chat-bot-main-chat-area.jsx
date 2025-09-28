@@ -28,11 +28,6 @@ function ChatBotMainChatArea({
   return (
     <div className="chat-scroll flex h-full w-full flex-col gap-4 overflow-y-auto bg-white px-3 py-6 md:h-[390px] md:gap-5 md:px-5 md:py-10">
       <BotChat text="👋 Hello! Welcome to Notionhive. How can we help you today?" />
-      <ChatSuggestion
-        suggestions={suggestions}
-        activeSuggestions={activeSuggestions}
-        handleSuggestionClick={handleSuggestionClick}
-      />
       {chatMessages.map((msg, idx) => {
         if (msg.type === "user")
           return <ClientChat key={idx} text={msg.text} />;
@@ -43,6 +38,11 @@ function ChatBotMainChatArea({
       {showSchedule && (
         <ChatBotMeetingWrapper handleScheduleSubmit={handleScheduleSubmit} />
       )}
+      <ChatSuggestion
+        suggestions={suggestions}
+        activeSuggestions={activeSuggestions}
+        handleSuggestionClick={handleSuggestionClick}
+      />
       {isPending && <ChatBotLoading />}
       <div className="-mt-4 md:-mt-5" ref={chatEndRef} />
     </div>

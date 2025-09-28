@@ -8,7 +8,10 @@ import ChatBotFooter from "./chat-bot-footer";
 import ChatBotTextarea from "./chat-bot-textarea";
 import ChatBotMainChatArea from "./chat-bot-main-chat-area";
 import EndChatModal from "./end-chat-modal";
-import { welcomeSuggestions } from "@/constants/welcome-suggestions";
+import {
+  topicsSuggestion,
+  welcomeSuggestions,
+} from "@/constants/welcome-suggestions";
 import { useAskApi } from "@/hooks/use-ask";
 import { useScheduleApi } from "@/hooks/use-schedule";
 
@@ -68,6 +71,7 @@ function ChatBotWrapper() {
       { query, user_id: userIdRef.current },
       {
         onSuccess: (data) => {
+          // Default bot reply
           if (data.action !== "schedule_meeting") {
             setChatMessages((prev) => [
               ...prev,
@@ -75,6 +79,7 @@ function ChatBotWrapper() {
             ]);
           }
 
+          // Schedule meeting flow
           if (data.action === "schedule_meeting") {
             setChatMessages((prev) => [
               ...prev,
@@ -84,6 +89,12 @@ function ChatBotWrapper() {
               },
             ]);
             setChatStep("askName");
+          }
+
+          // Services inquiry flow
+          if (data.action === "services_inquiry") {
+            setSuggestions(topicsSuggestion); // reset suggestions
+            setActiveSuggestions(true); // show suggestions
           }
         },
       },
@@ -127,25 +138,29 @@ function ChatBotWrapper() {
           ...prev,
           {
             type: "bot",
-            text:
-              data.message ||
-              "Your meeting has been successfully booked. A confirmation email has been sent to your inbox.",
+            text: data.message
+              ? "Your meeting has been successfully booked. A confirmation email has been sent to your inbox."
+              : "Somwething went wrong try again!",
           },
         ]);
 
-        setChatMessages((prev) => [
-          ...prev,
-          {
-            type: "schedule",
-            data: {
-              title: scheduleData.topic?.summary || "Scheduled Meeting",
-              date: scheduleData.date,
-              time: scheduleData.time,
-              event_link: data.event_link, // from API
-              meet_link: data.meet_link, // from API
-            },
-          },
-        ]);
+        {
+          data.event_link &&
+            data.meet_link &&
+            setChatMessages((prev) => [
+              ...prev,
+              {
+                type: "schedule",
+                data: {
+                  title: scheduleData.topic?.summary || "Scheduled Meeting",
+                  date: scheduleData.date,
+                  time: scheduleData.time,
+                  event_link: data.event_link, // from API
+                  meet_link: data.meet_link, // from API
+                },
+              },
+            ]);
+        }
 
         setChatStep("idle");
         setUserData({ name: "", email: "" });
