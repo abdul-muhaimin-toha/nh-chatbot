@@ -77,11 +77,6 @@ body {
   transition: transform 0.2s ease;
 }
 
-.rdp-button_previous:hover,
-.rdp-button_next:hover {
-  transform: scale(1.05);
-}
-
 .rdp-caption_label {
   font-size: 1rem;
   font-weight: 500;

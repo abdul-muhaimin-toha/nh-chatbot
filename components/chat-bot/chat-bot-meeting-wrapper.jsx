@@ -5,7 +5,7 @@ import { DayPicker } from "react-day-picker";
 import BackArrowIcon from "../icons/back-arrow-icon";
 import { topics } from "@/constants/topics";
 
-export default function ChatBotMeetingWrapper() {
+export default function ChatBotMeetingWrapper({ handleScheduleSubmit }) {
   const [step, setStep] = useState(1);
   const {
     control,
@@ -36,19 +36,18 @@ export default function ChatBotMeetingWrapper() {
 
   const onSubmit = (data) => {
     const formatted = {
-      date: data.date?.toISOString().split("T")[0] || "",
+      date: data.date?.toISOString().split("T")[0],
       time: data.time,
-      summary: data.topic?.summary || "",
-      description: data.topic?.description || "",
-      guest_emails: data.guestEmails,
+      topic: data.topic,
+      guestEmails: data.guestEmails,
     };
-    console.log(formatted);
+    handleScheduleSubmit(formatted);
   };
 
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="mx-14 flex flex-col items-center justify-center rounded-[20px] bg-[#F2F2F2] p-5"
+      className="flex flex-col items-center justify-center rounded-[20px] bg-[#F2F2F2] p-5 sm:mx-14"
     >
       {step > 1 && (
         <div className="flex w-full justify-start">
@@ -119,7 +118,7 @@ function StepDate({ control, errors }) {
             onSelect={field.onChange}
             navLayout="around"
             disabled={{ before: new Date() }}
-            className="mx-auto w-full"
+            className="mx-auto w-full overflow-auto"
             classNames={{
               selected: `bg-[#1158E51A] flex items-center justify-center rounded-full border-none text-[#1158E5]`,
             }}
@@ -402,7 +401,7 @@ function StepGuestsAndTopic({ control, errors, watchFields, setValue }) {
                   key={topic.id}
                   type="button"
                   onClick={() => field.onChange(topic)}
-                  className={`w-fit rounded-full border px-4 py-2 text-start text-sm ${
+                  className={`w-fit cursor-pointer rounded-full border px-4 py-2 text-start text-xs md:text-sm ${
                     field.value?.id === topic.id
                       ? "bg-[#1158E5] text-white"
                       : "border-[#1158E5] bg-transparent text-[#1158E5]"

@@ -1,15 +1,16 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useForm } from "react-hook-form";
 import ChatIcon from "@/components/icons/chat-icon";
 import ChatBotHeader from "./chat-bot-header";
 import ChatBotFooter from "./chat-bot-footer";
 import ChatBotTextarea from "./chat-bot-textarea";
 import ChatBotMainChatArea from "./chat-bot-main-chat-area";
-import { useForm } from "react-hook-form";
+import EndChatModal from "./end-chat-modal";
 import { welcomeSuggestions } from "@/constants/welcome-suggestions";
 import { useAskApi } from "@/hooks/use-ask";
-import EndChatModal from "./end-chat-modal";
+import { useScheduleApi } from "@/hooks/use-schedule";
 
 function ChatBotWrapper() {
   const [isOpen, setIsOpen] = useState(true);
@@ -17,32 +18,73 @@ function ChatBotWrapper() {
   const [activeSuggestions, setActiveSuggestions] = useState(true);
   const [suggestions, setSuggestions] = useState(welcomeSuggestions);
   const [chatMessages, setChatMessages] = useState([]);
+  const [chatStep, setChatStep] = useState("idle"); // idle, askName, askEmail, schedule
+  const [userData, setUserData] = useState({ name: "", email: "" });
+  const [showSchedule, setShowSchedule] = useState(false);
 
-  // unique user per session
   const userIdRef = useRef(crypto.randomUUID());
-
   const { register, handleSubmit, reset } = useForm();
   const { mutate: sendMessage, isPending } = useAskApi();
+  const { mutate: setSchedule, isPending: isSchedulePending } =
+    useScheduleApi();
 
   const handleSendMessage = (query) => {
     if (!query.trim()) return;
 
-    // Hide suggestions as soon as user sends a message
-    setActiveSuggestions(false);
-
-    // Add user message
     setChatMessages((prev) => [...prev, { type: "user", text: query }]);
 
-    // Call API
+    // Step: Name
+    if (chatStep === "askName") {
+      setUserData((prev) => ({ ...prev, name: query.trim() }));
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          type: "bot",
+          text: `Thanks ${query.trim()}! Now please enter your email.`,
+        },
+      ]);
+      setChatStep("askEmail");
+      return;
+    }
+
+    // Step: Email
+    if (chatStep === "askEmail") {
+      setUserData((prev) => ({ ...prev, email: query.trim() }));
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          type: "bot",
+          text: `When would you like to schedule your booking? Please choose a date and time.`,
+        },
+      ]);
+      setChatStep("schedule");
+      setShowSchedule(true);
+      return;
+    }
+
+    // Normal chat API
+    setActiveSuggestions(false);
     sendMessage(
       { query, user_id: userIdRef.current },
       {
         onSuccess: (data) => {
-          setChatMessages((prev) => [
-            ...prev,
-            { type: "bot", text: data.answer || "No reply from API" },
-          ]);
-          console.log("Full API response:", data);
+          if (data.action !== "schedule_meeting") {
+            setChatMessages((prev) => [
+              ...prev,
+              { type: "bot", text: data.answer || "No reply from API" },
+            ]);
+          }
+
+          if (data.action === "schedule_meeting") {
+            setChatMessages((prev) => [
+              ...prev,
+              {
+                type: "bot",
+                text: "Let's schedule a meeting. What's your name?",
+              },
+            ]);
+            setChatStep("askName");
+          }
         },
       },
     );
@@ -58,22 +100,76 @@ function ChatBotWrapper() {
   };
 
   const handleEndChat = () => {
-    // Clear chat messages
     setChatMessages([]);
-    // Reset suggestions
     setActiveSuggestions(true);
     setSuggestions(welcomeSuggestions);
-    // Close chat
     setIsOpen(false);
-    // Hide confirm modal
     setShowEndChatConfirm(false);
+    setChatStep("idle");
+    setUserData({ name: "", email: "" });
+    setShowSchedule(false);
+    setScheduleSummary(null);
+  };
+
+  const handleScheduleSubmit = (scheduleData) => {
+    const payload = {
+      date: scheduleData.date,
+      time: scheduleData.time,
+      user_email: userData.email,
+      summary: scheduleData.topic?.summary || "",
+      description: scheduleData.topic?.description || "",
+      guest_emails: scheduleData.guestEmails || [],
+    };
+
+    setSchedule(payload, {
+      onSuccess: (data) => {
+        setChatMessages((prev) => [
+          ...prev,
+          {
+            type: "bot",
+            text:
+              data.message ||
+              "Your meeting has been successfully booked. A confirmation email has been sent to your inbox.",
+          },
+        ]);
+
+        setChatMessages((prev) => [
+          ...prev,
+          {
+            type: "schedule",
+            data: {
+              title: scheduleData.topic?.summary || "Scheduled Meeting",
+              date: scheduleData.date,
+              time: scheduleData.time,
+              event_link: data.event_link, // from API
+              meet_link: data.meet_link, // from API
+            },
+          },
+        ]);
+
+        setChatStep("idle");
+        setUserData({ name: "", email: "" });
+        setShowSchedule(false);
+      },
+      onError: () => {
+        setChatMessages((prev) => [
+          ...prev,
+          {
+            type: "bot",
+            text: "Failed to schedule meeting. Please try again.",
+          },
+        ]);
+      },
+    });
   };
 
   return (
     <aside className="fixed inset-5 z-50 flex items-end md:inset-auto md:right-10 md:bottom-10">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed right-5 bottom-5 transform cursor-pointer rounded-full transition duration-200 hover:scale-110 md:right-10 md:bottom-10 ${isOpen ? "hidden md:block" : ""}`}
+        className={`fixed right-5 bottom-5 transform cursor-pointer rounded-full transition duration-200 hover:scale-110 md:right-10 md:bottom-10 ${
+          isOpen ? "hidden md:block" : ""
+        }`}
       >
         <ChatIcon />
       </button>
@@ -89,12 +185,17 @@ function ChatBotWrapper() {
             suggestions={suggestions}
             activeSuggestions={activeSuggestions}
             handleSuggestionClick={handleSuggestionClick}
-            isPending={isPending}
+            isPending={isPending || isSchedulePending}
+            chatStep={chatStep}
+            showSchedule={showSchedule}
+            handleScheduleSubmit={handleScheduleSubmit}
           />
-          <ChatBotTextarea
-            onSubmit={handleSubmit(onSubmit)}
-            register={register}
-          />
+          {!showSchedule && (
+            <ChatBotTextarea
+              onSubmit={handleSubmit(onSubmit)}
+              register={register}
+            />
+          )}
           <ChatBotFooter />
           <EndChatModal
             showEndChatConfirm={showEndChatConfirm}
