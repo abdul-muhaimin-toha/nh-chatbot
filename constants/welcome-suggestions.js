@@ -1,7 +1,6 @@
 export const welcomeSuggestions = [
   "📅 Schedule a meeting",
   "💼 View our services",
-  "🤖 Talk to a human",
 ];
 
 export const topicsSuggestion = [
