@@ -49,7 +49,7 @@ export default function ChatBotMeetingWrapper({ handleScheduleSubmit }) {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col items-center justify-center rounded-[20px] bg-[#F2F2F2] p-5 sm:mx-14"
+      className="flex flex-col items-center justify-center rounded-[20px] bg-[#F2F2F2] p-4 md:p-5 mx-2 "
     >
       {step > 1 && (
         <div className="flex w-full justify-start">
@@ -110,8 +110,8 @@ function StepDate({ control, errors }) {
       name="date"
       rules={{ required: "Please select a date" }}
       render={({ field }) => (
-        <div className="w-full flex-col items-center justify-center">
-          <h4 className="mb-4 text-center text-2xl font-medium text-black">
+        <div className="w-full flex flex-col items-center justify-center">
+          <h4 className="mb-4 text-center text-lg md:text-xl font-medium text-black">
             Select a Date & Time
           </h4>
           <DayPicker
@@ -177,7 +177,7 @@ function StepTime({ control, errors, watchDate }) {
         <div className="w-full">
           {watchDate && (
             <div className="flex flex-col gap-2 py-5">
-              <p className="text-2xl font-medium text-black">
+              <p className="text-lg md:text-xl font-medium text-black">
                 {watchDate.toLocaleDateString("en-US", { weekday: "long" })}
               </p>
               <p className="text-sm font-normal text-[#4D4D4D]">
@@ -191,7 +191,7 @@ function StepTime({ control, errors, watchDate }) {
           )}
 
           <div className="flex flex-col gap-2 py-5">
-            <h5 className="text-2xl font-medium text-black">Select a Time</h5>
+            <h5 className="text-lg md:text-xl font-medium text-black">Select a Time</h5>
             <p className="text-sm font-normal text-black">Duration: 30 min</p>
           </div>
 
@@ -258,7 +258,7 @@ function StepGuestsAndTopic({ control, errors, watchFields, setValue }) {
   return (
     <>
       <div className="flex flex-col gap-2 py-5">
-        <p className="text-2xl font-medium text-black">
+        <p className="text-lg md:text-xl font-medium text-black">
           30 Minute Complimentary Discovery Call
         </p>
         <div className="flex w-full flex-col gap-2 text-sm font-normal text-[#4D4D4D]">

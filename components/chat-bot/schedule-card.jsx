@@ -27,13 +27,13 @@ function ScheduleCard({ scheduleData }) {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center rounded-[20px] bg-white p-5 shadow-xl sm:mx-14">
+    <div className="flex flex-col items-center justify-center rounded-[20px] bg-white p-4 md:p-5 shadow-xl mx-2 md:mx-4">
       <div className="flex flex-col">
-        <p className="mb-3 text-2xl font-medium text-black">
+        <p className="mb-3 text-base md:text-lg font-medium text-black">
           30 Minute Complimentary Discovery Call
         </p>
-        <p className="mb-8 text-xl font-medium text-black">{title}</p>
-        <div className="flex w-full flex-col gap-2 text-sm font-normal text-[#4D4D4D]">
+        <p className="mb-6 md:mb-6 text-sm md:text-base font-medium text-black">{title}</p>
+        <div className="flex w-full flex-col gap-1 text-sm font-normal text-[#4D4D4D]">
           {/* Duration */}
           <div className="flex flex-row items-center justify-start gap-3">
             <svg

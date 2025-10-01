@@ -26,8 +26,8 @@ function ChatBotMainChatArea({
   console.log(chatMessages);
 
   return (
-    <div className="chat-scroll flex h-full w-full flex-col gap-4 overflow-y-auto bg-white px-3 py-6 md:h-[390px] md:gap-5 md:px-5 md:py-10">
-      <BotChat text="👋 Hello! Welcome to Notionhive. How can we help you today?" />
+    <div className="chat-scroll flex flex-1 w-full flex-col gap-4 overflow-y-auto bg-white px-3 py-6 transition-all duration-100 ease-in-out md:gap-4 md:px-4 md:py-6">
+      <BotChat text=" Hello! 👋 I'm NH Buddy. How can I help you today?" />
       {chatMessages.map((msg, idx) => {
         if (msg.type === "user")
           return <ClientChat key={idx} text={msg.text} />;

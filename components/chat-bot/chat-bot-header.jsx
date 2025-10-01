@@ -4,8 +4,8 @@ import MinimizeIcon from "../icons/minimize-icon";
 function ChatBotHeader({ setIsOpen, setShowEndChatConfirm }) {
   return (
     <header className="flex w-full items-center justify-between gap-5 bg-black p-5 text-white">
-      <h3 className="text-lg leading-[1.4em] font-bold md:text-2xl">
-        Chatting Bot
+      <h3 className="text-base leading-[1.4em] font-bold md:text-lg">
+        Ask NH Buddy
       </h3>
       <div className="flex flex-row items-center justify-end gap-5">
         <button onClick={() => setIsOpen(false)} className="cursor-pointer">
