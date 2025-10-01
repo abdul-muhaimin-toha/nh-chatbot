@@ -110,3 +110,28 @@ body {
 .animate-fade-out {
   animation: fade-out 0.3s ease-in forwards;
 }
+
+/* ReactMarkdown styles for proper list rendering */
+.bot-chat ul {
+  list-style-type: disc !important;
+  margin-left: 1.5rem !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.bot-chat ul li {
+  display: list-item !important;
+  margin-bottom: 0.25rem !important;
+}
+
+.bot-chat ol {
+  list-style-type: decimal !important;
+  margin-left: 1.5rem !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.bot-chat ol li {
+  display: list-item !important;
+  margin-bottom: 0.25rem !important;
+}

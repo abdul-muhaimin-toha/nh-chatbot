@@ -9,7 +9,23 @@ function BotChat({ text, msg, handleSuggestionClick }) {
         <NhAvatorIcon size={36} />
       </div>
       <div className="flex grow flex-col items-start justify-start rounded-[10px] rounded-tl-none bg-[#F0F6FF] px-3 py-2 text-left text-base leading-[1.6em] font-normal text-black md:rounded-tl-[10px] md:rounded-bl-none md:px-4">
-        <ReactMarkdown>{text}</ReactMarkdown>
+        <div className="bot-chat">
+          <ReactMarkdown
+            components={{
+              ul: ({ children }) => (
+                <ul className="list-disc ml-6 my-2 space-y-1">{children}</ul>
+              ),
+              li: ({ children }) => (
+                <li className="text-base leading-relaxed">{children}</li>
+              ),
+              strong: ({ children }) => (
+                <strong className="font-semibold text-black">{children}</strong>
+              ),
+            }}
+          >
+            {text}
+          </ReactMarkdown>
+        </div>
         {msg?.type === "specific_service" && (
           <div className="mt-5 flex flex-col gap-4">
             <p className="text-left text-base leading-[1.6em] font-normal text-black">
