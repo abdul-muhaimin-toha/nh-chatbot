@@ -8,7 +8,7 @@ function EndChatModal({
   if (!showEndChatConfirm) return null;
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center bg-[#00000099]">
+    <div className="absolute inset-0 z-[99999] flex items-center justify-center bg-[#00000099]">
       <div className="flex max-w-[80vw] flex-col items-center justify-center rounded-2xl bg-white p-5 opacity-100 md:max-w-[411px]">
         <ChatCloseIcon />
         <h4 className="mt-5 text-center text-xl leading-[1.41] font-medium -tracking-[2%] text-black md:mt-8 md:text-2xl">
