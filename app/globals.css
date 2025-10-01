@@ -135,3 +135,16 @@ body {
   display: list-item !important;
   margin-bottom: 0.25rem !important;
 }
+
+/* Clickable links styling in bot chat */
+.bot-chat a {
+  color: #1158E5 !important;
+  text-decoration: underline !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+}
+
+.bot-chat a:hover {
+  color: #0e3ecb !important;
+  text-decoration-thickness: 2px !important;
+}
