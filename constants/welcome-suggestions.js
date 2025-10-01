@@ -11,4 +11,5 @@ export const topicsSuggestion = [
   "📦 Branding & communication",
   "🚀 Search engine optimization",
   "👩🏻‍💼 Resource augmentation",
+  "🤖 AI Solutions",
 ];

@@ -34,4 +34,9 @@ export const topics = [
     summary: "👩🏻‍💼 Resource augmentation",
     description: "Tech description",
   },
+  {
+    id: 8,
+    summary: "🤖 AI Solutions",
+    description: "AI Solutions",
+  },
 ];

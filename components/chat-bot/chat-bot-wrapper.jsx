@@ -17,14 +17,14 @@ import { useScheduleApi } from "@/hooks/use-schedule";
 
 const generateUUID = () => {
   // Check if crypto.randomUUID is available
-  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+  if (typeof crypto !== "undefined" && crypto.randomUUID) {
     return crypto.randomUUID();
   }
-  
+
   // Fallback UUID generation
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    const r = Math.random() * 16 | 0;
-    const v = c == 'x' ? r : (r & 0x3 | 0x8);
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0;
+    const v = c == "x" ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
 };
@@ -51,7 +51,7 @@ function ChatBotWrapper() {
   // Function to get time-based greeting
   const getTimeBasedGreeting = () => {
     const hour = new Date().getHours();
-    
+
     if (hour >= 5 && hour < 12) {
       return "Good morning";
     } else if (hour >= 12 && hour < 17) {
@@ -74,15 +74,6 @@ function ChatBotWrapper() {
 
     return () => clearTimeout(timer);
   }, []);
-
-  // Function to close popup with animation
-  const handleClosePopup = () => {
-    setPopupFading(true);
-    setTimeout(() => {
-      setShowPopup(false);
-      setPopupFading(false);
-    }, 300);
-  };
 
   // Function to open chat from popup
   const handleOpenChatFromPopup = () => {
@@ -117,7 +108,7 @@ function ChatBotWrapper() {
     if (chatStep === "askEmail") {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       const trimmedEmail = query.trim();
-      
+
       if (!emailRegex.test(trimmedEmail)) {
         setChatMessages((prev) => [
           ...prev,
@@ -128,7 +119,7 @@ function ChatBotWrapper() {
         ]);
         return;
       }
-      
+
       setUserData((prev) => ({ ...prev, email: trimmedEmail }));
       setChatMessages((prev) => [
         ...prev,
@@ -148,8 +139,11 @@ function ChatBotWrapper() {
       { query, user_id: userIdRef.current },
       {
         onSuccess: (data) => {
-          // Default bot reply
-          if (data.action !== "schedule_meeting") {
+          // Default bot reply (if not special action)
+          if (
+            data.action !== "schedule_meeting" &&
+            data.action !== "specific_service_inquiry"
+          ) {
             setChatMessages((prev) => [
               ...prev,
               { type: "bot", text: data.answer || "No reply from API" },
@@ -172,6 +166,18 @@ function ChatBotWrapper() {
           if (data.action === "services_inquiry") {
             setSuggestions(topicsSuggestion); // reset suggestions
             setActiveSuggestions(true); // show suggestions
+          }
+
+          // 🔹 Specific service inquiry flow
+          if (data.action === "specific_service_inquiry") {
+            setChatMessages((prev) => [
+              ...prev,
+              {
+                type: "specific_service", // different type so you can render differently
+                data: data.service || {}, // you can put extra details here
+                text: data.answer || "Here are details about the service.",
+              },
+            ]);
           }
         },
       },
@@ -196,7 +202,6 @@ function ChatBotWrapper() {
     setChatStep("idle");
     setUserData({ name: "", email: "" });
     setShowSchedule(false);
-    setScheduleSummary(null);
   };
 
   const handleScheduleSubmit = (scheduleData) => {
@@ -259,44 +264,36 @@ function ChatBotWrapper() {
     <aside className="fixed inset-5 z-50 flex items-end md:inset-auto md:right-10 md:bottom-10">
       {/* Popup that appears for 3 seconds */}
       {showPopup && !isOpen && (
-        <div className={`absolute bottom-16 right-0 z-[99998] md:bottom-20 md:right-0 ${popupFading ? 'animate-fade-out' : 'animate-fade-in'}`}>
-          <div className="relative w-[280px] md:w-[350px] min-h-[180px] md:min-h-[208px] rounded-3xl bg-white p-4 md:p-6 shadow-2xl border border-gray-100">
+        <div
+          className={`absolute right-0 bottom-16 z-[99998] md:right-0 md:bottom-20 ${popupFading ? "animate-fade-out" : "animate-fade-in"}`}
+        >
+          <div className="relative min-h-[180px] w-[280px] rounded-3xl border border-gray-100 bg-white p-4 shadow-2xl md:min-h-[208px] md:w-[350px] md:p-6">
             {/* Speech bubble arrow */}
-            <div className="absolute -bottom-2 right-8 h-4 w-4 rotate-45 bg-white border-r border-b border-gray-100"></div>
-            
+            <div className="absolute right-8 -bottom-2 h-4 w-4 rotate-45 border-r border-b border-gray-100 bg-white"></div>
+
             <div className="flex items-start space-x-3">
               <div className="flex-shrink-0">
-                <div className="h-12 w-12 rounded-full flex items-center justify-center shadow-lg">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full shadow-lg">
                   <div className="scale-75">
                     <ChatIcon />
                   </div>
                 </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-base font-semibold text-gray-900 mb-1">
+              <div className="min-w-0 flex-1">
+                <p className="mb-1 text-base font-semibold text-gray-900">
                   {getTimeBasedGreeting()}, I'm NH Buddy.
                 </p>
-                <p className="text-sm text-gray-600 mb-6 leading-relaxed;">
+                <p className="leading-relaxed; mb-6 text-sm text-gray-600">
                   If you have any question, please let me know.
                 </p>
                 <button
                   onClick={handleOpenChatFromPopup}
-                  className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-black-600 bg-white-50 border border-grey-200 rounded-full hover:bg-white-100 hover:border-grey-300 transition-all duration-200 shadow-sm hover:shadow-md transform hover:scale-105"
+                  className="text-black-600 bg-white-50 border-grey-200 hover:bg-white-100 hover:border-grey-300 inline-flex transform items-center justify-center rounded-full border px-4 py-2 text-sm font-medium shadow-sm transition-all duration-200 hover:scale-105 hover:shadow-md"
                 >
                   Yes, I have a question
                 </button>
               </div>
             </div>
-            
-            {/* Close button */}
-            {/* <button
-              onClick={handleClosePopup}
-              className="absolute top-2 right-2 p-1 text-gray-400 hover:text-gray-600 transition-colors duration-200"
-            >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-              </svg>
-            </button> */}
           </div>
         </div>
       )}
@@ -311,7 +308,7 @@ function ChatBotWrapper() {
       </button>
 
       {isOpen && (
-        <div className="absolute z-[99999] flex h-[94dvh] w-full flex-col overflow-hidden rounded-[10px] shadow transition-all duration-300 ease-in-out md:absolute md:right-0 md:bottom-20 md:h-auto md:min-h-[450px] md:max-h-[680px] md:w-[400px] md:rounded-[20px]">
+        <div className="absolute z-[99999] flex h-[94dvh] w-full flex-col overflow-hidden rounded-[10px] shadow transition-all duration-300 ease-in-out md:absolute md:right-0 md:bottom-20 md:h-auto md:max-h-[680px] md:min-h-[450px] md:w-[420px] md:rounded-[20px]">
           <ChatBotHeader
             setIsOpen={setIsOpen}
             setShowEndChatConfirm={setShowEndChatConfirm}
